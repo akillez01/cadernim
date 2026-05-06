@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cadernim
+    ports:
+      - "${HINARIO_DB_PORT:-5433}:5432"
+    volumes:
+      - cadernim-postgres-data:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/cadernim?schema=public
+      SESSION_SECRET: dev-session-secret-local
+      ADMIN_USER_EMAIL: admin@cadernim.local
+      ADMIN_USER_PASSWORD: admin123456
+      STUDENT_USER_EMAIL: aluno@cadernim.local
+      STUDENT_USER_PASSWORD: aluno123456
+      NEXT_PUBLIC_APP_NAME: Hinario Inteligente
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ..:/app
+      - /app/node_modules
+
+volumes:
+  cadernim-postgres-data:

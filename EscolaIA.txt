@@ -1,0 +1,477 @@
+Você é um engenheiro de software sênior especialista em arquitetura full stack, aplicações musicais, interfaces educacionais e produtos SaaS. Sua tarefa é criar o MVP de uma plataforma web chamada provisoriamente **Hinário Inteligente**, voltada ao estudo de hinos do Santo Daime com foco em ensino musical interativo.
+
+# OBJETIVO DO PRODUTO
+
+Construir uma plataforma web moderna onde o usuário possa:
+
+* importar arquivos **MusicXML / MXL** de partituras de hinos
+* visualizar a partitura no navegador
+* reproduzir o hino
+* **mudar o tom** de forma dinâmica
+* alterar BPM
+* repetir trechos em loop
+* escolher tipos de acompanhamento
+* estudar com apoio de uma **IA pedagógica**
+* futuramente usar microfone para comparar execução/canto com a partitura
+
+O sistema deve ser pensado como algo semelhante ao Guitar Pro ou um player de estudo musical, porém **especializado em ensino de hinos**, com abordagem simples, bonita, moderna e intuitiva.
+
+# DIRETRIZES DE PRODUTO
+
+O foco não é só renderizar partitura. O foco é ser uma **plataforma pedagógica musical**.
+
+O sistema deve permitir:
+
+1. Estudo visual da partitura
+2. Estudo auditivo com playback
+3. Ajuste de tonalidade
+4. Ajuste de andamento
+5. Acompanhamento configurável
+6. Assistente inteligente que ajuda o aluno a praticar
+
+A IA deve ser implementada inicialmente como uma camada de orientação pedagógica baseada no conteúdo do hino e nas ações do usuário, sem depender de reconhecimento de áudio em tempo real no MVP inicial.
+
+# ESCOPO DO MVP
+
+## Funcionalidades obrigatórias do MVP
+
+### Biblioteca de hinos
+
+* cadastrar hinos no sistema
+* listar hinos em tela
+* visualizar detalhes do hino
+* armazenar:
+
+  * título
+  * número
+  * autor
+  * tom original
+  * andamento
+  * compasso
+  * categoria
+  * tags
+  * arquivo MusicXML ou MXL
+
+### Visualização da partitura
+
+* exibir a partitura no frontend a partir do MusicXML
+* destacar compasso atual durante playback, se possível
+* layout responsivo
+
+### Reprodução
+
+* reproduzir o hino
+* play/pause/stop
+* seek simples se a biblioteca suportar
+* mostrar andamento atual
+
+### Transposição
+
+* permitir transposição por semitons
+* botão para subir tom
+* botão para descer tom
+* exibir tom atual
+* manter tom original salvo
+
+### Controle de andamento
+
+* alterar BPM
+* resetar para BPM original
+
+### Loop de estudo
+
+* permitir selecionar início e fim de trecho simples
+* repetir trecho
+
+### Tipos de acompanhamento
+
+Criar um sistema inicial de acompanhamento em presets:
+
+* somente melodia
+* melodia + metrônomo
+* melodia + acordes básicos
+* melodia + acompanhamento simples de violão
+* melodia + pad suave opcional
+
+Mesmo que a geração musical real seja simulada ou parcialmente limitada no MVP, a arquitetura deve ser preparada para expansão.
+
+### IA pedagógica inicial
+
+Criar um assistente dentro da plataforma que:
+
+* analise os metadados do hino
+* gere dicas de estudo
+* sugira prática mais lenta
+* sugira repetição de trechos
+* explique dificuldade do hino
+* responda perguntas sobre:
+
+  * tom
+  * andamento
+  * compasso
+  * dificuldade
+  * ordem de estudo
+  * dicas para violão/canto
+
+Essa IA pode inicialmente funcionar via regras + prompts estruturados + contexto do hino.
+
+# ARQUITETURA OBRIGATÓRIA
+
+## Stack principal
+
+### Frontend
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* componentes modernos e limpos
+* usar App Router
+* layout profissional
+* responsivo para desktop e tablet
+
+### Backend
+
+* Next.js API routes ou backend separado com NestJS
+* preferencialmente deixar preparado para separar depois
+* TypeScript
+* API REST clara
+
+### Banco de dados
+
+* PostgreSQL
+* ORM: Prisma
+
+### Armazenamento
+
+* local no ambiente de desenvolvimento
+* abstração preparada para S3/R2 no futuro
+
+### Renderização musical / player
+
+Avalie e implemente com prioridade em bibliotecas adequadas para:
+
+* importar MusicXML
+* exibir partitura
+* tocar partitura
+* permitir transposição
+
+Preferência por soluções como:
+
+* alphaTab
+* OpenSheetMusicDisplay
+* ou outra alternativa viável
+
+Escolha a melhor biblioteca para o MVP com justificativa técnica no README.
+
+# INTELIGÊNCIA ARTIFICIAL NO MVP
+
+Criar um módulo chamado `pedagogical-assistant`.
+
+Esse módulo deve:
+
+* receber dados do hino
+* receber estado atual de estudo do usuário
+* gerar orientações práticas
+
+Exemplos:
+
+* "Este hino parece mais fácil para voz do que para violão"
+* "Tente estudar primeiro em 70% do andamento"
+* "Repita os compassos 4 a 8 antes de tocar inteiro"
+* "O tom atual está 2 semitons acima do original"
+* "Para iniciantes, sugerimos acompanhamento básico"
+
+Implementar esse módulo de forma desacoplada para depois poder integrar:
+
+* LLM externo
+* análise por áudio
+* recomendação personalizada por histórico
+
+# TELAS DO SISTEMA
+
+## 1. Tela inicial
+
+* branding simples
+* botão entrar
+* lista de hinos ou dashboard
+
+## 2. Dashboard
+
+* cards com hinos cadastrados
+* busca por título
+* filtro por categoria/tag
+* botão para adicionar hino
+
+## 3. Cadastro de hino
+
+* formulário completo
+* upload de MusicXML/MXL
+* preview básico
+
+## 4. Player/Estudo do hino
+
+Essa é a tela principal e mais importante.
+
+Elementos:
+
+* nome do hino
+* autor
+* tom original
+* tom atual
+* partitura renderizada
+* controles de play
+* BPM
+* transposição
+* loop
+* seletor de acompanhamento
+* painel lateral da IA pedagógica
+* seção de observações do aluno
+
+## 5. Histórico do aluno
+
+Mesmo que simples no MVP:
+
+* hinos acessados
+* tom usado
+* BPM usado
+* última prática
+
+# MODELAGEM DE DADOS
+
+Crie schema Prisma inicial com tabelas como:
+
+## users
+
+* id
+* name
+* email
+* passwordHash
+* createdAt
+* updatedAt
+
+## hymns
+
+* id
+* title
+* number
+* author
+* originalKey
+* defaultBpm
+* timeSignature
+* category
+* tags
+* xmlFilePath
+* createdAt
+* updatedAt
+
+## hymn_sessions
+
+* id
+* userId
+* hymnId
+* selectedKey
+* selectedBpm
+* accompanimentType
+* loopStart
+* loopEnd
+* createdAt
+* updatedAt
+
+## hymn_notes
+
+* id
+* userId
+* hymnId
+* content
+* createdAt
+* updatedAt
+
+## ai_recommendations
+
+* id
+* userId
+* hymnId
+* recommendationType
+* content
+* createdAt
+
+# REGRAS DE UX/UI
+
+A interface deve ser:
+
+* moderna
+* limpa
+* intuitiva
+* confortável para estudo prolongado
+* visualmente elegante, sem poluição
+
+Estilo desejado:
+
+* tons suaves
+* identidade espiritual/contemplativa discreta
+* aparência profissional
+* foco em legibilidade da partitura e dos controles
+
+Evitar:
+
+* visual genérico demais
+* excesso de cores fortes
+* layout confuso
+
+# REQUISITOS TÉCNICOS IMPORTANTES
+
+* código organizado em módulos
+* tipagem forte
+* componentes reutilizáveis
+* tratamento de erro
+* README completo
+* scripts de setup
+* seed inicial com alguns hinos fictícios
+* ambiente pronto para rodar localmente com Docker
+
+# ESTRUTURA DE PASTAS DESEJADA
+
+Monorepo ou estrutura organizada com pelo menos:
+
+* apps/web
+* apps/api ou api embutida
+* packages/ui
+* packages/music-engine
+* packages/pedagogical-assistant
+* prisma
+* docker
+
+Se preferir estrutura mais simples para MVP, manter modularidade clara.
+
+# MUSIC ENGINE
+
+Criar um módulo `music-engine` responsável por:
+
+* importar MusicXML/MXL
+* extrair metadados
+* normalizar dados
+* controlar transposição
+* expor interface para playback
+* fornecer dados para a IA pedagógica
+
+Esse módulo deve ser desacoplado da UI.
+
+# PEDAGOGICAL ASSISTANT
+
+Criar um módulo `pedagogical-assistant` com:
+
+* análise de dificuldade básica
+* sugestões de BPM
+* sugestões de sequência de estudo
+* orientação por nível: iniciante, intermediário, avançado
+
+Implementar lógica inicial por regras claras, por exemplo:
+
+* BPM alto = sugerir redução
+* compasso incomum = avisar dificuldade
+* transposição alta = alertar adaptação
+* acompanhamento complexo = sugerir versão simples
+
+Criar também uma interface futura para uso com LLM.
+
+# ENTREGA ESPERADA
+
+Quero que você gere:
+
+1. Estrutura completa do projeto
+2. Código inicial funcional
+3. Frontend com telas principais
+4. Backend com CRUD de hinos
+5. Upload e leitura básica de MusicXML
+6. Integração inicial com renderização musical
+7. Player funcional ou parcialmente funcional com base real
+8. Transposição implementada
+9. Painel lateral da IA pedagógica
+10. README detalhado com:
+
+* como instalar
+* como rodar
+* decisões técnicas
+* limitações do MVP
+* próximos passos
+
+# INSTRUÇÕES DE EXECUÇÃO
+
+Implemente de forma incremental.
+
+## Passo 1
+
+Criar estrutura do projeto, dependências e arquitetura.
+
+## Passo 2
+
+Criar schema Prisma, banco e seed.
+
+## Passo 3
+
+Criar CRUD de hinos.
+
+## Passo 4
+
+Criar tela de player/estudo.
+
+## Passo 5
+
+Integrar biblioteca musical.
+
+## Passo 6
+
+Implementar transposição e BPM.
+
+## Passo 7
+
+Criar módulo de IA pedagógica.
+
+## Passo 8
+
+Documentar tudo no README.
+
+# REQUISITOS DE CÓDIGO
+
+* usar nomes claros
+* comentar apenas o necessário
+* evitar gambiarra
+* manter separação entre domínio, aplicação e UI
+* usar componentes de qualidade
+* criar tipos e interfaces corretas
+* não deixar código solto ou desorganizado
+
+# DIFERENCIAL DO PRODUTO
+
+Este sistema não é apenas um player de partitura.
+
+Ele é uma plataforma de:
+
+* estudo de hinos
+* prática guiada
+* personalização de tom
+* acompanhamento musical
+* apoio pedagógico com IA
+
+Portanto, todas as decisões devem refletir esse posicionamento.
+
+# EXTRA
+
+Se houver limitação real de alguma biblioteca para playback ou transposição de MusicXML no navegador:
+
+* documente claramente
+* implemente a melhor aproximação possível
+* mantenha a arquitetura pronta para upgrade
+
+# SAÍDA ESPERADA AGORA
+
+Comece criando o projeto base completo e funcional.
+
+Quero que você:
+
+* monte a arquitetura
+* gere os arquivos iniciais
+* implemente o MVP
+* explique no README como testar
+
+Não apenas descreva. Gere o código do projeto.

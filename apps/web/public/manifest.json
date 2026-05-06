@@ -1,0 +1,13 @@
+{
+  "name": "Cadernim — Escola da Floresta",
+  "short_name": "Cadernim",
+  "description": "Estudo interativo de hinos com partitura, playback e assistente pedagógico",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f5f1ea",
+  "theme_color": "#3a5a40",
+  "orientation": "any",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

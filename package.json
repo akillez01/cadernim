@@ -1,0 +1,42 @@
+{
+  "name": "cadernim",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run db:up && npm run prisma:generate && npm run prisma:deploy && node scripts/seed-if-empty.mjs && npm run dev:web",
+    "dev:web": "npm run dev --workspace @cadernim/web",
+    "build": "npm run build --workspace @cadernim/web",
+    "build:plesk": "npm run build --workspace @cadernim/web && node scripts/prepare-plesk.mjs",
+    "pack:plesk": "npm run build:plesk && tar -czf dist/plesk-bundle.tar.gz -C dist plesk",
+    "start": "npm run start --workspace @cadernim/web",
+    "start:plesk": "node dist/plesk/server.js",
+    "lint": "npm run lint --workspace @cadernim/web",
+    "typecheck": "npm run typecheck --workspace @cadernim/web",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "db:up": "docker compose -p cadernim -f docker/docker-compose.yml up -d db",
+    "db:down": "docker compose -p cadernim -f docker/docker-compose.yml down",
+    "docker:up": "docker compose -p cadernim -f docker/docker-compose.yml up --build",
+    "mobile:sync": "npm run sync --workspace @cadernim/mobile",
+    "mobile:android": "npm run open:android --workspace @cadernim/mobile",
+    "mobile:build:apk": "npm run build:apk --workspace @cadernim/mobile",
+    "mobile:build:aab": "npm run build:aab --workspace @cadernim/mobile",
+    "mobile:icons": "npm run icons --workspace @cadernim/mobile"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.7.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.7.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

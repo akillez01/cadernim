@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --forest-ink: #24322c;
+  --forest-muted: #5a7467;
+  --forest-paper: #fbf6ed;
+  --forest-leaf: #dce9df;
+}
+
+body {
+  @apply text-moss-900 antialiased;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 12% -10%, #dbe8dc 0%, transparent 60%),
+    radial-gradient(900px 420px at 92% 0%, #efe3ce 0%, transparent 58%),
+    linear-gradient(180deg, #fffdf9 0%, #f8f4ec 44%, #f7f3ea 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.3;
+  background-image:
+    repeating-linear-gradient(
+      60deg,
+      rgba(100, 139, 116, 0.08) 0,
+      rgba(100, 139, 116, 0.08) 1px,
+      transparent 1px,
+      transparent 16px
+    );
+}
+
+::selection {
+  background: #d2b68f;
+  color: #24322c;
+}
+
+.forest-shell {
+  position: relative;
+  overflow: clip;
+}
+
+.forest-shell::after {
+  content: "";
+  position: absolute;
+  right: -90px;
+  bottom: -90px;
+  width: 240px;
+  height: 240px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(100, 139, 116, 0.18), rgba(100, 139, 116, 0));
+  pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #84ab92;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4ebdd;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 14mm 12mm;
+}
+
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 11pt;
+  }
+
+  body::before {
+    display: none !important;
+  }
+
+  /* Esconde navegação, header, botões */
+  header,
+  nav,
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Conteúdo principal ocupa toda a largura */
+  main {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Cada hino começa em nova página */
+  .booklet-page {
+    break-after: page;
+    page-break-after: always;
+    margin: 0;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  .booklet-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* Cabeçalho do hino na impressão */
+  .booklet-hymn-header {
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 0.5pt solid #aaa;
+  }
+
+  /* Partitura OSMD ocupa toda a largura */
+  .osmd-print-wrap {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .osmd-print-wrap svg {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove bordas e sombras de containers */
+  .rounded-2xl,
+  .rounded-xl,
+  .shadow-soft,
+  .shadow-sm {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}

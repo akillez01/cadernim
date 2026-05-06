@@ -1,0 +1,11 @@
+node_modules
+.next
+.env
+.env.local
+*.log
+uploads/hymns/*
+!uploads/hymns/.gitkeep
+coverage
+.DS_Store
+npm-debug.log*
+dist

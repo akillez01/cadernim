@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@cadernim/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@cadernim/music-engine": [
+        "../../packages/music-engine/src/index.ts"
+      ],
+      "@cadernim/pedagogical-assistant": [
+        "../../packages/pedagogical-assistant/src/index.ts"
+      ]
+    },
+    "esModuleInterop": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

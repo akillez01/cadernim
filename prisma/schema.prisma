@@ -1,0 +1,146 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccompanimentType {
+  melody
+  melody_metronome
+  melody_chords
+  melody_guitar
+  melody_pad
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
+}
+
+model User {
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  passwordHash      String
+  role              UserRole           @default(STUDENT)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  hymnSessions      HymnSession[]
+  hymnNotes         HymnNote[]
+  aiRecommendations AIRecommendation[]
+
+  @@index([role])
+}
+
+model Hymn {
+  id                String             @id @default(cuid())
+  title             String
+  number            Int
+  author            String
+  originalKey       String
+  defaultBpm        Int
+  timeSignature     String
+  category          String
+  tags              String[]
+  xmlFilePath       String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  hymnSessions      HymnSession[]
+  hymnNotes         HymnNote[]
+  aiRecommendations AIRecommendation[]
+
+  @@index([title])
+  @@index([category])
+}
+
+model HymnSession {
+  id                String            @id @default(cuid())
+  userId            String
+  hymnId            String
+  selectedKey       String
+  selectedBpm       Int
+  accompanimentType AccompanimentType
+  loopStart         Int?
+  loopEnd           Int?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hymn              Hymn              @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([hymnId])
+}
+
+model HymnNote {
+  id        String   @id @default(cuid())
+  userId    String
+  hymnId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hymn      Hymn     @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([hymnId])
+}
+
+model AIRecommendation {
+  id                 String   @id @default(cuid())
+  userId             String
+  hymnId             String
+  recommendationType String
+  content            String
+  createdAt          DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hymn               Hymn     @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([hymnId])
+}
+
+model VideoLesson {
+  id            String   @id @default(cuid())
+  module        String
+  order         Int      @default(0)
+  title         String
+  teacher       String
+  level         String   @default("iniciante")
+  durationLabel String   @default("")
+  description   String   @default("")
+  tags          String[]
+  thumbnail     String   @default("")
+  sourceUrl     String
+  sourceType    String   @default("youtube")
+  materials     Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([module])
+  @@index([order])
+}
+
+model PodcastEpisode {
+  id             String   @id @default(cuid())
+  series         String
+  order          Int      @default(0)
+  title          String
+  host           String
+  level          String   @default("iniciante")
+  durationLabel  String   @default("")
+  publishedLabel String   @default("")
+  description    String   @default("")
+  tags           String[]
+  coverImage     String   @default("")
+  sourceUrl      String   @default("")
+  sourceType     String   @default("direct")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([series])
+  @@index([order])
+}
