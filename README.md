@@ -165,6 +165,13 @@ Esses valores podem ser alterados por ambiente:
 - `STUDENT_USER_PASSWORD`
 - `SESSION_SECRET`
 
+### Credenciais de produção (cadernim.com.br)
+
+| Perfil | Email | Senha |
+|--------|-------|-------|
+| Admin | `admin@cadernim.com.br` | `Cadernim2026!` |
+| Aluno (estudante) | `aluno@cadernim.com.br` | `Aluno2026` |
+
 ## Perfis e permissões
 
 - `ADMIN`: controle total de catálogo (cadastrar, editar e remover hinos), acesso completo às demais áreas.
@@ -286,6 +293,46 @@ Guia completo:
 - `docs/DEPLOY_COMPLETO_PLESK_DOCKER.md` (passo a passo completo com Docker + banco + Node.js no Plesk)
 - `docs/DEV_LOCAL_DOCKER_UNIFICADO.md` (fluxo local unificado com `npm run dev`)
 
+## App Android (Cadernim Mobile)
+
+App nativo Kotlin/Compose — `apps/mobile/android/`
+
+### Download
+
+- **APK de teste:** `https://cadernim.com.br/downloads/cadernim.apk`
+- Versão atual: debug build `2026-06-04`
+
+### Funcionalidades do app
+
+- Login com sessão por cookie (mesmo backend)
+- **Hinário** — lista offline-first com busca, sincronização automática
+- **Detalhe do hino** — partitura (OSMD/Verovio) + player de acompanhamento via WebView
+- **AVA** — vídeo aulas YouTube com player nativo in-app
+- **Podcasts** — player de áudio com ExoPlayer
+- **Cifras / Hinários PDF** — leitor de PDF com duplo toque para virar página, zoom, indicador de página
+- **Coleções de hinos disponíveis:** Oração (15 hinos), Mestre Irineu - Cruzeirinho (14 hinos)
+- **Hinários em PDF:** Céu das Matas (10 hinários)
+
+### Compilar e instalar via adb
+
+```bash
+cd apps/mobile/android
+./gradlew installDebug
+```
+
+### Coleções de MusicXML
+
+| Coleção | Categoria | Hinos | IDs |
+|---------|-----------|-------|-----|
+| Oração | `oracao` | 15 | `oracao-001-*` |
+| Mestre Irineu - Cruzeirinho | `cruzeirinho` | 14 | `cruzeirinho-001-*` |
+
+Para importar novos hinos MXL do Cruzeirinho:
+```bash
+npx tsx scripts/import-cruzeirinho.ts
+DATABASE_URL=... npx tsx scripts/seed-cruzeirinho.ts
+```
+
 ## Próximos passos sugeridos
 
 1. Recuperação de senha e autenticação social (OAuth)
@@ -295,3 +342,4 @@ Guia completo:
 5. Módulo de captura por microfone com comparação de afinação/ritmo
 6. Storage em S3/R2 com assinatura de URLs
 7. Testes automatizados (unitários + integração de API)
+8. Notificações com media controls na tela de bloqueio (MediaSession)

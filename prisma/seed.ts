@@ -7,6 +7,7 @@ import { parseMusicXmlMetadata } from "@cadernim/music-engine";
 const prisma = new PrismaClient();
 const SCRYPT_KEY_LENGTH = 64;
 const OBRIGATORY_TAGS = ["hinario", "oracao", "escola-da-floresta"];
+const CRUZEIRINHO_TAGS = ["hinario", "cruzeirinho", "escola-da-floresta"];
 const LEGACY_SAMPLE_HYMN_IDS = ["sample-hymn-1", "sample-hymn-2", "sample-hymn-3"];
 
 type HymnSeedEntry = {
@@ -44,7 +45,8 @@ function slugify(value: string) {
 }
 
 function inferNumberAndTitle(folderName: string) {
-  const parsed = folderName.match(/^(\d+)\s+(.+)$/u);
+  // Suporta "1 Título" e "1- Título" (formato do Cruzeirinho)
+  const parsed = folderName.match(/^(\d+)[-\s]\s*(.+)$/u);
   if (!parsed) {
     return {
       explicitNumber: undefined,
@@ -163,6 +165,92 @@ function loadOracaoHymns(uploadsDir: string): HymnSeedEntry[] {
       timeSignature: entry.timeSignature,
       category: "Oração",
       tags: OBRIGATORY_TAGS,
+      xmlFilePath: `uploads/hymns/${fileName}`
+    });
+  });
+
+  return result;
+}
+
+function loadCollectionHymns(
+  collectionDirName: string,
+  category: string,
+  idPrefix: string,
+  tags: string[],
+  uploadsDir: string
+): HymnSeedEntry[] {
+  const collectionsRoot = join(process.cwd(), "docs", "Arquivos XML");
+  const xmlRoot = join(collectionsRoot, collectionDirName, "XML");
+  if (!existsSync(xmlRoot)) {
+    return [];
+  }
+
+  const rawEntries = readdirSync(xmlRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => {
+      const scorePath = join(xmlRoot, entry.name, "score.xml");
+      if (!existsSync(scorePath)) {
+        return [];
+      }
+
+      const xmlContent = readFileSync(scorePath, "utf8");
+      const metadata = parseMusicXmlMetadata(xmlContent);
+      const inferred = inferNumberAndTitle(entry.name);
+      const metadataTitle = typeof metadata.title === "string" ? metadata.title.trim() : "";
+      const title = metadataTitle || inferred.fallbackTitle || entry.name;
+      const author = typeof metadata.composer === "string" ? metadata.composer.trim() : "";
+
+      return [
+        {
+          folderName: entry.name,
+          explicitNumber: inferred.explicitNumber,
+          title,
+          author: author || "Desconhecido",
+          originalKey: metadata.key ?? "C",
+          defaultBpm: toSafeBpm(metadata.tempo),
+          timeSignature: metadata.timeSignature ?? "4/4",
+          xmlContent
+        }
+      ];
+    });
+
+  if (!rawEntries.length) return [];
+
+  rawEntries.sort((a, b) => {
+    if (a.explicitNumber !== undefined && b.explicitNumber !== undefined) {
+      return a.explicitNumber - b.explicitNumber;
+    }
+    if (a.explicitNumber !== undefined) return -1;
+    if (b.explicitNumber !== undefined) return 1;
+    return a.title.localeCompare(b.title, "pt-BR");
+  });
+
+  const maxExplicitNumber = rawEntries.reduce((max, entry) => {
+    if (entry.explicitNumber === undefined) return max;
+    return Math.max(max, entry.explicitNumber);
+  }, 0);
+
+  let nextAutoNumber = maxExplicitNumber + 1;
+  const result: HymnSeedEntry[] = [];
+
+  rawEntries.forEach((entry) => {
+    const number = entry.explicitNumber ?? nextAutoNumber++;
+    const slug = slugify(entry.title) || slugify(entry.folderName) || `hino-${number}`;
+    const id = `${idPrefix}-${String(number).padStart(3, "0")}-${slug}`;
+    const fileName = `${id}.musicxml`;
+
+    writeFileSync(join(uploadsDir, fileName), entry.xmlContent, "utf8");
+
+    result.push({
+      id,
+      title: entry.title,
+      number,
+      author: entry.author,
+      originalKey: entry.originalKey,
+      defaultBpm: entry.defaultBpm,
+      timeSignature: entry.timeSignature,
+      category,
+      tags,
       xmlFilePath: `uploads/hymns/${fileName}`
     });
   });
@@ -339,7 +427,19 @@ async function main() {
     throw new Error("Nenhum score.xml foi encontrado em docs/Arquivos XML/Oração/XML.");
   }
 
-  const hymns = await upsertHymns(oracaoEntries);
+  const cruzeirinoEntries = loadCollectionHymns(
+    "Mestre Irineu - Cruzeirinho",
+    "Mestre Irineu - Cruzeirinho",
+    "cruzeirinho",
+    CRUZEIRINHO_TAGS,
+    uploadsDir
+  );
+  if (cruzeirinoEntries.length) {
+    console.log(`Cruzeirinho: ${cruzeirinoEntries.length} hinos encontrados.`);
+  }
+
+  const allEntries = [...oracaoEntries, ...cruzeirinoEntries];
+  const hymns = await upsertHymns(allEntries);
 
   await prisma.hymn.deleteMany({
     where: { id: { in: LEGACY_SAMPLE_HYMN_IDS } }
@@ -349,7 +449,10 @@ async function main() {
   await seedAvaLessons();
   await seedPodcastEpisodes();
 
-  console.log(`Seed finalizado com sucesso. ${hymns.length} hinos da colecao Oração foram sincronizados.`);
+  const cruzeirinoCount = cruzeirinoEntries.length;
+  console.log(
+    `Seed finalizado com sucesso. ${oracaoEntries.length} hinos Oração + ${cruzeirinoCount} hinos Cruzeirinho sincronizados.`
+  );
 }
 
 main()

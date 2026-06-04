@@ -2,13 +2,41 @@ ext {
     minSdkVersion = 23
     compileSdkVersion = 35
     targetSdkVersion = 35
+
+    // AndroidX Core
     androidxActivityVersion = '1.9.2'
     androidxAppCompatVersion = '1.7.0'
-    androidxCoordinatorLayoutVersion = '1.2.0'
     androidxCoreVersion = '1.15.0'
+    androidxCoordinatorLayoutVersion = '1.2.0'
     androidxFragmentVersion = '1.8.4'
     coreSplashScreenVersion = '1.0.1'
-    androidxWebkitVersion = '1.12.1'
+
+    // Compose
+    composeBomVersion = '2024.12.01'
+
+    // Lifecycle
+    lifecycleVersion = '2.8.7'
+
+    // Navigation
+    navigationVersion = '2.8.5'
+
+    // Hilt
+    hiltNavigationVersion = '1.2.0'
+
+    // Room
+    roomVersion = '2.6.1'
+
+    // Network
+    retrofitVersion = '2.11.0'
+    okhttpVersion = '4.12.0'
+
+    // Media3 (ExoPlayer)
+    media3Version = '1.5.0'
+
+    // DataStore
+    datastoreVersion = '1.1.1'
+
+    // Testing
     junitVersion = '4.13.2'
     androidxJunitVersion = '1.2.1'
     androidxEspressoCoreVersion = '3.6.1'
